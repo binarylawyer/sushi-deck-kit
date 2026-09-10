@@ -43,8 +43,7 @@
       "types": "./src/gate/index.ts",
       "default": "./src/gate/index.ts"
     },
-    "./examples/sushii-world/presentation.html": "./examples/sushii-world/sushii-world-presentation.html",
-    "./examples/sushii-world/assets/*": "./examples/sushii-world/assets/*"
+    "./examples/sushii-world/presentation.html": "./examples/sushii-world/sushii-world-presentation.html"
   },
   "peerDependencies": {
     "react": ">=18",
