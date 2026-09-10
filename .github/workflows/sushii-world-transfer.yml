@@ -22,18 +22,19 @@ jobs:
         with:
           ref: feat/sushii-world-reference-artifact
 
-      - name: Assemble and verify canonical artifact
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Assemble and verify canonical artifact bytes
         shell: bash
         run: |
           set -euo pipefail
-          expected=(
-            html.part01 html.part02 html.part03
-            bento-composition.part01 bento-composition.part02 bento-composition.part03
-            jubako-stack.part01 jubako-stack.part02 jubako-stack.part03
-            wrapped-roll.part01 wrapped-roll.part02 wrapped-roll.part03
-          )
-          for part in "${expected[@]}"; do
-            test -f ".artifact-transfer/$part"
+          for stem in html bento-composition jubako-stack wrapped-roll; do
+            for part in 01 02 03 04 05 06 07 08; do
+              test -f ".artifact-transfer/${stem}.part${part}"
+            done
           done
 
           mkdir -p examples/sushii-world/assets
@@ -47,6 +48,61 @@ jobs:
             'a879f731be9d403284dbc78588a837b367222df9f1414a35f61a601cb83f80be' 'examples/sushii-world/assets/bento-composition.webp' \
             '84820498cbcfa3bd29a0db02cc1f0b5d5fd2fbacbcfc934e4c19ec8f3ef1db64' 'examples/sushii-world/assets/jubako-stack.webp' \
             'f97636bf6fca5804384d05699df712ddfeae03934bbe73d58d91ffdb40dd06db' 'examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
+
+      - name: Validate presentation structure and offline references
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('examples/sushii-world/sushii-world-presentation.html', 'utf8');
+          const slides = [...html.matchAll(/<section\b[^>]*\bid=["'](s\d+)["']/gi)].map((m) => m[1]);
+          const expected = Array.from({ length: 19 }, (_, i) => `s${i + 1}`);
+          if (JSON.stringify(slides) !== JSON.stringify(expected)) {
+            throw new Error(`Expected slides s1..s19, found: ${slides.join(', ')}`);
+          }
+          const requiredAssets = [
+            'assets/bento-composition.webp',
+            'assets/jubako-stack.webp',
+            'assets/wrapped-roll.webp',
+          ];
+          for (const ref of requiredAssets) {
+            if (!html.includes(ref)) throw new Error(`Missing asset reference: ${ref}`);
+            if (!fs.existsSync(`examples/sushii-world/${ref}`)) throw new Error(`Missing asset file: ${ref}`);
+          }
+          const externalRefs = [...html.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)/gi)].map((m) => m[1]);
+          if (externalRefs.length) throw new Error(`External runtime references found: ${externalRefs.join(', ')}`);
+          for (const marker of ['@media print', 'keydown', 'ArrowRight', 'ArrowLeft']) {
+            if (!html.includes(marker)) throw new Error(`Missing presentation behavior marker: ${marker}`);
+          }
+          if (!/speaker|notes?/i.test(html)) throw new Error('Speaker-note behavior marker not found');
+          console.log('Sushii World structure: 19 slides; local assets; navigation, notes, and print behavior present.');
+          NODE
+
+      - name: Install and run kit checks
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
+      - name: Verify npm package contents
+        shell: bash
+        run: |
+          npm pack --dry-run --json > /tmp/sushii-pack.json
+          node <<'NODE'
+          const fs = require('node:fs');
+          const result = JSON.parse(fs.readFileSync('/tmp/sushii-pack.json', 'utf8'));
+          const paths = new Set(result[0].files.map((file) => file.path));
+          const required = [
+            'examples/sushii-world/README.md',
+            'examples/sushii-world/sushii-world-presentation.html',
+            'examples/sushii-world/assets/bento-composition.webp',
+            'examples/sushii-world/assets/jubako-stack.webp',
+            'examples/sushii-world/assets/wrapped-roll.webp',
+          ];
+          const missing = required.filter((path) => !paths.has(path));
+          if (missing.length) throw new Error(`npm pack is missing: ${missing.join(', ')}`);
+          console.log('npm pack includes the Sushii World HTML, README, and all three assets.');
+          NODE
 
       - name: Commit verified artifact and remove transfer scaffolding
         shell: bash
