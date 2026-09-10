@@ -1,0 +1,99 @@
+name: Sushii World remote repair diagnostic
+
+on:
+  push:
+    branches:
+      - fix/sushii-world-artifact-integrity
+    paths:
+      - ".artifact-fix/DIAG_READY"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sushii-world-artifact-integrity
+          fetch-depth: 0
+
+      - name: Diagnose repair source and repository gates
+        shell: bash
+        run: |
+          set +e
+          mkdir -p .artifact-fix/diag /tmp/sushii-world-diag
+          rm -f .artifact-fix/diag/*
+          URL='https://filebin.net/sushiiworld-fix-9b1370ba/archive.zip'
+
+          curl --fail --location --retry 2 --retry-delay 1 "$URL" -o /tmp/sushii-world-diag/archive.zip
+          rc=$?
+          if [ $rc -eq 0 ]; then touch .artifact-fix/diag/download.ok; else echo "$rc" > .artifact-fix/diag/download.fail; fi
+
+          if [ $rc -eq 0 ]; then
+            actual=$(sha256sum /tmp/sushii-world-diag/archive.zip | awk '{print $1}')
+            if [ "$actual" = '9b1370baffd287e67207af83bb6acb828ee67534fde56b6e932f9d970e8d5263' ]; then
+              touch .artifact-fix/diag/zip-sha.ok
+            else
+              printf '%s\n' "$actual" > .artifact-fix/diag/zip-sha.fail
+              rc=90
+            fi
+          fi
+
+          if [ $rc -eq 0 ]; then
+            mkdir -p /tmp/sushii-world-diag/unpacked
+            unzip -q /tmp/sushii-world-diag/archive.zip -d /tmp/sushii-world-diag/unpacked
+            rc=$?
+            if [ $rc -eq 0 ]; then touch .artifact-fix/diag/unzip.ok; else echo "$rc" > .artifact-fix/diag/unzip.fail; fi
+          fi
+
+          if [ $rc -eq 0 ]; then
+            printf '%s  %s\n' \
+              '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' '/tmp/sushii-world-diag/unpacked/examples/sushii-world/sushii-world-presentation.html' \
+              '58cd39c5c18c2facbee380586aaf9d1ddada7e4a5786c41b06d4c2758bf1fe6c' '/tmp/sushii-world-diag/unpacked/examples/sushii-world/assets/bento-composition.webp' \
+              'fe2bedce30874e4b62bbc929bc64d39db964711d3d2dd848e975d374570d6231' '/tmp/sushii-world-diag/unpacked/examples/sushii-world/assets/jubako-stack.webp' \
+              'e51efdbea46529523dad0223555bd18d89c5e367270d4de45218b5c900156b5a' '/tmp/sushii-world-diag/unpacked/examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
+            rc=$?
+            if [ $rc -eq 0 ]; then touch .artifact-fix/diag/file-sha.ok; else echo "$rc" > .artifact-fix/diag/file-sha.fail; fi
+          fi
+
+          if [ $rc -eq 0 ]; then
+            node <<'NODE'
+          const fs = require('node:fs');
+          const base = '/tmp/sushii-world-diag/unpacked/examples/sushii-world';
+          const html = fs.readFileSync(`${base}/sushii-world-presentation.html`, 'utf8');
+          const slides = [...html.matchAll(/<section\b[^>]*\bid=["'](s\d+)["']/gi)].map(m => m[1]);
+          const expected = Array.from({length:19}, (_,i) => `s${i+1}`);
+          if (JSON.stringify(slides) !== JSON.stringify(expected)) process.exit(11);
+          for (const n of ['bento-composition.webp','jubako-stack.webp','wrapped-roll.webp']) {
+            if (!html.includes(`assets/${n}`)) process.exit(12);
+          }
+          if ([...html.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)/gi)].length) process.exit(13);
+          for (const marker of ['@media print','keydown','ArrowRight','ArrowLeft']) if (!html.includes(marker)) process.exit(14);
+          if (!/speaker|notes?/i.test(html)) process.exit(15);
+          NODE
+            rc=$?
+            if [ $rc -eq 0 ]; then touch .artifact-fix/diag/structure.ok; else echo "$rc" > .artifact-fix/diag/structure.fail; fi
+          fi
+
+          npm ci >/tmp/sushii-world-diag/npm-ci.log 2>&1
+          npmrc=$?
+          if [ $npmrc -eq 0 ]; then touch .artifact-fix/diag/npm-ci.ok; else echo "$npmrc" > .artifact-fix/diag/npm-ci.fail; fi
+
+          if [ $npmrc -eq 0 ]; then
+            npm run typecheck >/tmp/sushii-world-diag/typecheck.log 2>&1
+            trc=$?
+            if [ $trc -eq 0 ]; then touch .artifact-fix/diag/typecheck.ok; else echo "$trc" > .artifact-fix/diag/typecheck.fail; fi
+
+            npm test >/tmp/sushii-world-diag/test.log 2>&1
+            terc=$?
+            if [ $terc -eq 0 ]; then touch .artifact-fix/diag/test.ok; else echo "$terc" > .artifact-fix/diag/test.fail; fi
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .artifact-fix/diag
+          git commit -m 'chore: record Sushii World repair diagnostics' || true
+          git push origin HEAD:fix/sushii-world-artifact-integrity
+          exit 0
