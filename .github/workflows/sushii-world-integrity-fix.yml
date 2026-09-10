@@ -34,6 +34,7 @@ jobs:
           test -f .artifact-fix/READY
           compgen -G '.artifact-fix/archive.part*' > /dev/null
           cat .artifact-fix/archive.part* | base64 --decode > /tmp/sushii-world.zip
+          echo '9b1370baffd287e67207af83bb6acb828ee67534fde56b6e932f9d970e8d5263  /tmp/sushii-world.zip' | sha256sum --check --strict
           rm -rf /tmp/sushii-world
           mkdir -p /tmp/sushii-world
           unzip -q /tmp/sushii-world.zip -d /tmp/sushii-world
@@ -48,9 +49,9 @@ jobs:
           set -euo pipefail
           printf '%s  %s\n' \
             '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' '/tmp/sushii-world/examples/sushii-world/sushii-world-presentation.html' \
-            'a879f731be9d403284dbc78588a837b367222df9f1414a35f61a601cb83f80be' '/tmp/sushii-world/examples/sushii-world/assets/bento-composition.webp' \
-            '84820498cbcfa3bd29a0db02cc1f0b5d5fd2fbacbcfc934e4c19ec8f3ef1db64' '/tmp/sushii-world/examples/sushii-world/assets/jubako-stack.webp' \
-            'f97636bf6fca5804384d05699df712ddfeae03934bbe73d58d91ffdb40dd06db' '/tmp/sushii-world/examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
+            '58cd39c5c18c2facbee380586aaf9d1ddada7e4a5786c41b06d4c2758bf1fe6c' '/tmp/sushii-world/examples/sushii-world/assets/bento-composition.webp' \
+            'fe2bedce30874e4b62bbc929bc64d39db964711d3d2dd848e975d374570d6231' '/tmp/sushii-world/examples/sushii-world/assets/jubako-stack.webp' \
+            'e51efdbea46529523dad0223555bd18d89c5e367270d4de45218b5c900156b5a' '/tmp/sushii-world/examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
 
       - name: Install verified artifact into repository
         shell: bash
