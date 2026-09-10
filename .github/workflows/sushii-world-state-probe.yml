@@ -1,0 +1,53 @@
+name: Probe Sushii World repair state
+
+on:
+  push:
+    branches:
+      - fix/sushii-world-artifact-integrity
+    paths:
+      - ".repair-state/PROBE_READY"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sushii-world-artifact-integrity
+          fetch-depth: 0
+      - name: Record state markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .repair-state/results
+          mkdir -p .repair-state/results
+          check_hash() {
+            expected="$1"; file="$2"; marker="$3"
+            if [ -f "$file" ] && [ "$(sha256sum "$file" | awk '{print $1}')" = "$expected" ]; then
+              touch ".repair-state/results/${marker}.ok"
+            else
+              touch ".repair-state/results/${marker}.fail"
+            fi
+          }
+          check_hash '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' 'examples/sushii-world/sushii-world-presentation.html' html
+          check_hash '58cd39c5c18c2facbee380586aaf9d1ddada7e4a5786c41b06d4c2758bf1fe6c' 'examples/sushii-world/assets/bento-composition.webp' bento
+          check_hash 'fe2bedce30874e4b62bbc929bc64d39db964711d3d2dd848e975d374570d6231' 'examples/sushii-world/assets/jubako-stack.webp' jubako
+          check_hash 'e51efdbea46529523dad0223555bd18d89c5e367270d4de45218b5c900156b5a' 'examples/sushii-world/assets/wrapped-roll.webp' wrapped
+          node <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const ok = p.files?.includes('examples') &&
+            p.exports?.['./examples/sushii-world/presentation.html']==='./examples/sushii-world/sushii-world-presentation.html' &&
+            p.exports?.['./examples/sushii-world/assets/*']==='./examples/sushii-world/assets/*';
+          fs.closeSync(fs.openSync(`.repair-state/results/package.${ok?'ok':'fail'}`,'w'));
+          NODE
+          if [ ! -e .artifact-transfer ]; then touch .repair-state/results/old-transfer-absent.ok; else touch .repair-state/results/old-transfer-absent.fail; fi
+          if [ ! -e .artifact-fix ]; then touch .repair-state/results/fix-staging-absent.ok; else touch .repair-state/results/fix-staging-absent.fail; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .repair-state/results
+          git commit -m 'chore: record Sushii World repair state' || true
+          git push origin HEAD:fix/sushii-world-artifact-integrity
