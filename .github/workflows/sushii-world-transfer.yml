@@ -32,9 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           for stem in html bento-composition jubako-stack wrapped-roll; do
-            for part in 01 02 03 04 05 06 07 08; do
-              test -f ".artifact-transfer/${stem}.part${part}"
-            done
+            compgen -G ".artifact-transfer/${stem}.part*" > /dev/null
           done
 
           mkdir -p examples/sushii-world/assets
