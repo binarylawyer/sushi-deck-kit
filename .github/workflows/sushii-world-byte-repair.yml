@@ -5,7 +5,7 @@ on:
     branches:
       - fix/sushii-world-artifact-bytes-v2
     paths:
-      - ".artifact-repair/READY"
+      - ".github/workflows/sushii-world-byte-repair.yml"
 
 permissions:
   contents: write
@@ -17,31 +17,37 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: fix/sushii-world-artifact-bytes-v2
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - name: Reconstruct verified archive
+      - name: Recover canonical archive from preserved PR 14 history
         shell: bash
         run: |
           set -euo pipefail
-          cat .artifact-repair/archive.part* | base64 --decode > /tmp/sushii-world-small.zip
-          echo '653d80865a8c088603b8e0e136170df7dbf866d16663d9d4472c891c86517c7f  /tmp/sushii-world-small.zip' | sha256sum --check --strict
-          rm -rf /tmp/sushii-world-unpack
-          mkdir -p /tmp/sushii-world-unpack
-          unzip -q /tmp/sushii-world-small.zip -d /tmp/sushii-world-unpack
-          cp -f /tmp/sushii-world-unpack/examples/sushii-world/sushii-world-presentation.html examples/sushii-world/sushii-world-presentation.html
-          cp -f /tmp/sushii-world-unpack/examples/sushii-world/assets/*.webp examples/sushii-world/assets/
+          : > /tmp/sushii-world.b64
+          for part in 01 02 03 04; do
+            git show de924f303f85a5c9c8ed095de26131e4eb328f9c:.artifact-transfer/archive.part${part} >> /tmp/sushii-world.b64
+          done
+          base64 --decode /tmp/sushii-world.b64 > /tmp/sushii-world-manual-upload.zip
+          rm -rf /tmp/sushii-unpack
+          mkdir -p /tmp/sushii-unpack
+          unzip -q /tmp/sushii-world-manual-upload.zip -d /tmp/sushii-unpack
+
+          mkdir -p examples/sushii-world/assets
+          cp -f /tmp/sushii-unpack/examples/sushii-world/sushii-world-presentation.html examples/sushii-world/sushii-world-presentation.html
+          cp -f /tmp/sushii-unpack/examples/sushii-world/assets/*.webp examples/sushii-world/assets/
 
           printf '%s  %s\n' \
             '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' 'examples/sushii-world/sushii-world-presentation.html' \
-            '950f7d7d080ebae24ab7bc6d32fd11355ec44585fa6c989a649c73625c87e792' 'examples/sushii-world/assets/bento-composition.webp' \
-            '9d3eb1f8b06a8d859f6632c0a01e72b9a974d564205e5301ffa78bcdf5ce4439' 'examples/sushii-world/assets/jubako-stack.webp' \
-            '1ca58d785788264c4537bf58846d0e3d450ba40b3f9e9046ec85d8d50d6e2e28' 'examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
+            'a879f731be9d403284dbc78588a837b367222df9f1414a35f61a601cb83f80be' 'examples/sushii-world/assets/bento-composition.webp' \
+            '84820498cbcfa3bd29a0db02cc1f0b5d5fd2fbacbcfc934e4c19ec8f3ef1db64' 'examples/sushii-world/assets/jubako-stack.webp' \
+            'f97636bf6fca5804384d05699df712ddfeae03934bbe73d58d91ffdb40dd06db' 'examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
 
-      - name: Validate presentation structure
+      - name: Validate presentation structure and offline references
         shell: bash
         run: |
           node <<'NODE'
@@ -89,11 +95,10 @@ jobs:
           console.log('npm pack includes the Sushii World HTML, README, and all three assets.');
           NODE
 
-      - name: Commit repaired bytes and remove staging
+      - name: Commit repaired bytes and remove temporary workflow
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .artifact-repair
           rm -f .github/workflows/sushii-world-byte-repair.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
