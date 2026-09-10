@@ -31,15 +31,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for stem in html bento-composition jubako-stack wrapped-roll; do
-            compgen -G ".artifact-transfer/${stem}.part*" > /dev/null
-          done
-
+          compgen -G '.artifact-transfer/archive.part*' > /dev/null
+          cat .artifact-transfer/archive.part* | base64 --decode > /tmp/sushii-world-manual-upload.zip
+          rm -rf /tmp/sushii-unpack
+          mkdir -p /tmp/sushii-unpack
+          unzip -q /tmp/sushii-world-manual-upload.zip -d /tmp/sushii-unpack
+          test -f /tmp/sushii-unpack/examples/sushii-world/sushii-world-presentation.html
+          test -f /tmp/sushii-unpack/examples/sushii-world/assets/bento-composition.webp
+          test -f /tmp/sushii-unpack/examples/sushii-world/assets/jubako-stack.webp
+          test -f /tmp/sushii-unpack/examples/sushii-world/assets/wrapped-roll.webp
           mkdir -p examples/sushii-world/assets
-          cat .artifact-transfer/html.part* | base64 --decode > examples/sushii-world/sushii-world-presentation.html
-          cat .artifact-transfer/bento-composition.part* | base64 --decode > examples/sushii-world/assets/bento-composition.webp
-          cat .artifact-transfer/jubako-stack.part* | base64 --decode > examples/sushii-world/assets/jubako-stack.webp
-          cat .artifact-transfer/wrapped-roll.part* | base64 --decode > examples/sushii-world/assets/wrapped-roll.webp
+          cp /tmp/sushii-unpack/examples/sushii-world/sushii-world-presentation.html examples/sushii-world/
+          cp /tmp/sushii-unpack/examples/sushii-world/assets/*.webp examples/sushii-world/assets/
 
           printf '%s  %s\n' \
             '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' 'examples/sushii-world/sushii-world-presentation.html' \
@@ -55,15 +58,8 @@ jobs:
           const html = fs.readFileSync('examples/sushii-world/sushii-world-presentation.html', 'utf8');
           const slides = [...html.matchAll(/<section\b[^>]*\bid=["'](s\d+)["']/gi)].map((m) => m[1]);
           const expected = Array.from({ length: 19 }, (_, i) => `s${i + 1}`);
-          if (JSON.stringify(slides) !== JSON.stringify(expected)) {
-            throw new Error(`Expected slides s1..s19, found: ${slides.join(', ')}`);
-          }
-          const requiredAssets = [
-            'assets/bento-composition.webp',
-            'assets/jubako-stack.webp',
-            'assets/wrapped-roll.webp',
-          ];
-          for (const ref of requiredAssets) {
+          if (JSON.stringify(slides) !== JSON.stringify(expected)) throw new Error(`Expected slides s1..s19, found: ${slides.join(', ')}`);
+          for (const ref of ['assets/bento-composition.webp','assets/jubako-stack.webp','assets/wrapped-roll.webp']) {
             if (!html.includes(ref)) throw new Error(`Missing asset reference: ${ref}`);
             if (!fs.existsSync(`examples/sushii-world/${ref}`)) throw new Error(`Missing asset file: ${ref}`);
           }
