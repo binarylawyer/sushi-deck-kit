@@ -24,7 +24,7 @@ jobs:
         run: |
           set -euo pipefail
           expected=(
-            html.part01 html.part02 html.part03
+            html.part01 html.part02 html.part03 html.part04
             jubako-stack.part01 jubako-stack.part02 jubako-stack.part03
             wrapped-roll.part01 wrapped-roll.part02 wrapped-roll.part03
             bento-composition.part01 bento-composition.part02 bento-composition.part03 bento-composition.part04
@@ -43,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p examples/sushii-world/assets
-          cat .artifact-transfer/html.part* > examples/sushii-world/sushii-world-presentation.html
+          cat .artifact-transfer/html.part* | base64 --decode > examples/sushii-world/sushii-world-presentation.html
           cat .artifact-transfer/jubako-stack.part* | base64 --decode > examples/sushii-world/assets/jubako-stack.webp
           cat .artifact-transfer/wrapped-roll.part* | base64 --decode > examples/sushii-world/assets/wrapped-roll.webp
           cat .artifact-transfer/bento-composition.part* | base64 --decode > examples/sushii-world/assets/bento-composition.webp
