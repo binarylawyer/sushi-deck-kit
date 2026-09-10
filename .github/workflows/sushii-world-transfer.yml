@@ -1,0 +1,14 @@
+name: Sushii World artifact transfer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "transfer staging"
