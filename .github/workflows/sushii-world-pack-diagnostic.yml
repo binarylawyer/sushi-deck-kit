@@ -1,0 +1,65 @@
+name: Sushii World pack diagnostic
+
+on:
+  push:
+    branches:
+      - fix/sushii-world-artifact-integrity
+    paths:
+      - ".artifact-fix/PACK_DIAG_READY"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sushii-world-artifact-integrity
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Diagnose pack and branch state
+        shell: bash
+        run: |
+          set +e
+          mkdir -p .artifact-fix/diag2
+          rm -f .artifact-fix/diag2/*
+          npm ci >/tmp/npm-ci.log 2>&1
+          nrc=$?
+          if [ $nrc -eq 0 ]; then touch .artifact-fix/diag2/npm-ci.ok; else echo "$nrc" > .artifact-fix/diag2/npm-ci.fail; fi
+          if [ $nrc -eq 0 ]; then
+            npm pack --dry-run --json > /tmp/pack.json 2>/tmp/pack.err
+            prc=$?
+            if [ $prc -eq 0 ]; then touch .artifact-fix/diag2/pack-command.ok; else echo "$prc" > .artifact-fix/diag2/pack-command.fail; fi
+            if [ $prc -eq 0 ]; then
+              node <<'NODE'
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync('/tmp/pack.json','utf8'));
+          if(!Array.isArray(result) || !result[0]?.files) process.exit(21);
+          const paths=new Set(result[0].files.map(f=>f.path));
+          const required=['examples/sushii-world/README.md','examples/sushii-world/sushii-world-presentation.html','examples/sushii-world/assets/bento-composition.webp','examples/sushii-world/assets/jubako-stack.webp','examples/sushii-world/assets/wrapped-roll.webp'];
+          if(required.some(p=>!paths.has(p))) process.exit(22);
+          NODE
+              jrc=$?
+              if [ $jrc -eq 0 ]; then touch .artifact-fix/diag2/pack-parse.ok; else echo "$jrc" > .artifact-fix/diag2/pack-parse.fail; fi
+            fi
+          fi
+          git fetch origin fix/sushii-world-artifact-integrity >/tmp/fetch.log 2>&1
+          frc=$?
+          if [ $frc -eq 0 ]; then touch .artifact-fix/diag2/fetch.ok; else echo "$frc" > .artifact-fix/diag2/fetch.fail; fi
+          if [ $frc -eq 0 ]; then
+            localsha=$(git rev-parse HEAD)
+            remotesha=$(git rev-parse origin/fix/sushii-world-artifact-integrity 2>/dev/null)
+            rrc=$?
+            if [ $rrc -eq 0 ] && [ "$localsha" = "$remotesha" ]; then touch .artifact-fix/diag2/branch-stable.ok; else printf '%s\n%s\n' "$localsha" "$remotesha" > .artifact-fix/diag2/branch-stable.fail; fi
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .artifact-fix/diag2
+          git commit -m 'chore: record Sushii World pack diagnostics' || true
+          git push origin HEAD:fix/sushii-world-artifact-integrity
+          exit 0

@@ -1,0 +1,30 @@
+name: Clean Sushii World repair staging
+
+on:
+  push:
+    branches:
+      - fix/sushii-world-artifact-integrity
+    paths:
+      - ".repair-state/CLEAN_READY"
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sushii-world-artifact-integrity
+          fetch-depth: 0
+      - name: Remove staging and diagnostic data
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .artifact-transfer .artifact-fix .repair-state
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: remove Sushii World repair staging data'
+          git push origin HEAD:fix/sushii-world-artifact-integrity
