@@ -1,0 +1,102 @@
+name: Sushii World byte repair
+
+on:
+  push:
+    branches:
+      - fix/sushii-world-artifact-bytes-v2
+    paths:
+      - ".artifact-repair/READY"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sushii-world-artifact-bytes-v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Reconstruct verified archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .artifact-repair/archive.part* | base64 --decode > /tmp/sushii-world-small.zip
+          echo '653d80865a8c088603b8e0e136170df7dbf866d16663d9d4472c891c86517c7f  /tmp/sushii-world-small.zip' | sha256sum --check --strict
+          rm -rf /tmp/sushii-world-unpack
+          mkdir -p /tmp/sushii-world-unpack
+          unzip -q /tmp/sushii-world-small.zip -d /tmp/sushii-world-unpack
+          cp -f /tmp/sushii-world-unpack/examples/sushii-world/sushii-world-presentation.html examples/sushii-world/sushii-world-presentation.html
+          cp -f /tmp/sushii-world-unpack/examples/sushii-world/assets/*.webp examples/sushii-world/assets/
+
+          printf '%s  %s\n' \
+            '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' 'examples/sushii-world/sushii-world-presentation.html' \
+            '950f7d7d080ebae24ab7bc6d32fd11355ec44585fa6c989a649c73625c87e792' 'examples/sushii-world/assets/bento-composition.webp' \
+            '9d3eb1f8b06a8d859f6632c0a01e72b9a974d564205e5301ffa78bcdf5ce4439' 'examples/sushii-world/assets/jubako-stack.webp' \
+            '1ca58d785788264c4537bf58846d0e3d450ba40b3f9e9046ec85d8d50d6e2e28' 'examples/sushii-world/assets/wrapped-roll.webp' | sha256sum --check --strict
+
+      - name: Validate presentation structure
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('examples/sushii-world/sushii-world-presentation.html', 'utf8');
+          const slides = [...html.matchAll(/<section\b[^>]*\bid=["'](s\d+)["']/gi)].map((m) => m[1]);
+          const expected = Array.from({ length: 19 }, (_, i) => `s${i + 1}`);
+          if (JSON.stringify(slides) !== JSON.stringify(expected)) throw new Error(`Expected slides s1..s19, found ${slides.join(', ')}`);
+          for (const ref of ['assets/bento-composition.webp','assets/jubako-stack.webp','assets/wrapped-roll.webp']) {
+            if (!html.includes(ref)) throw new Error(`Missing asset reference: ${ref}`);
+            if (!fs.existsSync(`examples/sushii-world/${ref}`)) throw new Error(`Missing asset file: ${ref}`);
+          }
+          const external = [...html.matchAll(/(?:src|href)=["'](https?:\/\/[^"']+)/gi)].map((m) => m[1]);
+          if (external.length) throw new Error(`External runtime references found: ${external.join(', ')}`);
+          for (const marker of ['@media print','keydown','ArrowRight','ArrowLeft']) {
+            if (!html.includes(marker)) throw new Error(`Missing presentation marker: ${marker}`);
+          }
+          if (!/speaker|notes?/i.test(html)) throw new Error('Speaker-note marker not found');
+          console.log('Verified Sushii World: 19 slides, local assets, navigation, notes, and print behavior.');
+          NODE
+
+      - name: Run kit checks
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
+      - name: Verify package contents
+        shell: bash
+        run: |
+          npm pack --dry-run --json > /tmp/pack.json
+          node <<'NODE'
+          const fs = require('node:fs');
+          const result = JSON.parse(fs.readFileSync('/tmp/pack.json', 'utf8'));
+          const paths = new Set(result[0].files.map((f) => f.path));
+          const required = [
+            'examples/sushii-world/README.md',
+            'examples/sushii-world/sushii-world-presentation.html',
+            'examples/sushii-world/assets/bento-composition.webp',
+            'examples/sushii-world/assets/jubako-stack.webp',
+            'examples/sushii-world/assets/wrapped-roll.webp',
+          ];
+          const missing = required.filter((p) => !paths.has(p));
+          if (missing.length) throw new Error(`npm pack missing: ${missing.join(', ')}`);
+          console.log('npm pack includes the Sushii World HTML, README, and all three assets.');
+          NODE
+
+      - name: Commit repaired bytes and remove staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .artifact-repair
+          rm -f .github/workflows/sushii-world-byte-repair.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: install verified Sushii World artifact bytes'
+          git push origin HEAD:fix/sushii-world-artifact-bytes-v2
