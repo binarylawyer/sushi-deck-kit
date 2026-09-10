@@ -24,10 +24,10 @@ jobs:
         run: |
           set -euo pipefail
           expected=(
-            html.part01 html.part02 html.part03 html.part04
-            jubako-stack.part01 jubako-stack.part02 jubako-stack.part03
-            wrapped-roll.part01 wrapped-roll.part02 wrapped-roll.part03
-            bento-composition.part01 bento-composition.part02 bento-composition.part03 bento-composition.part04
+            html-gz.part01 html-gz.part02
+            jubako-stack.part01 jubako-stack.part02 jubako-stack.part03 jubako-stack.part04
+            wrapped-roll.part01 wrapped-roll.part02 wrapped-roll.part03 wrapped-roll.part04
+            bento-composition.part01 bento-composition.part02 bento-composition.part03 bento-composition.part04 bento-composition.part05
           )
           for part in "${expected[@]}"; do
             if [ ! -f ".artifact-transfer/$part" ]; then
@@ -43,15 +43,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p examples/sushii-world/assets
-          cat .artifact-transfer/html.part* | base64 --decode > examples/sushii-world/sushii-world-presentation.html
+          cat .artifact-transfer/html-gz.part* | base64 --decode | gzip --decompress > examples/sushii-world/sushii-world-presentation.html
           cat .artifact-transfer/jubako-stack.part* | base64 --decode > examples/sushii-world/assets/jubako-stack.webp
           cat .artifact-transfer/wrapped-roll.part* | base64 --decode > examples/sushii-world/assets/wrapped-roll.webp
           cat .artifact-transfer/bento-composition.part* | base64 --decode > examples/sushii-world/assets/bento-composition.webp
           printf '%s  %s\n' \
             '0ca9089ae53cda7ede2ad8ef78f85de3690f2503e71925728142cc56c7467f87' 'examples/sushii-world/sushii-world-presentation.html' \
-            '84820498cbcfa3bd29a0db02cc1f0b5d5fd2fbacbcfc934e4c19ec8f3ef1db64' 'examples/sushii-world/assets/jubako-stack.webp' \
-            'f97636bf6fca5804384d05699df712ddfeae03934bbe73d58d91ffdb40dd06db' 'examples/sushii-world/assets/wrapped-roll.webp' \
-            'a879f731be9d403284dbc78588a837b367222df9f1414a35f61a601cb83f80be' 'examples/sushii-world/assets/bento-composition.webp' | sha256sum --check --strict
+            '6fa8b510bc14c6bac7cca61643b0d7c0e88d40173b315f314dbaa34982b97697' 'examples/sushii-world/assets/jubako-stack.webp' \
+            'd0bfee2e6368cf35a8ead41e7b8443bc692e9d068534325b47ecc8e7d49d439b' 'examples/sushii-world/assets/wrapped-roll.webp' \
+            'af10e42a859854c3778d15565fc230ad7be1c2489cbc21fdf464b64440b7bc59' 'examples/sushii-world/assets/bento-composition.webp' | sha256sum --check --strict
 
       - name: Commit assembled artifact
         if: steps.ready.outputs.ready == 'true'
