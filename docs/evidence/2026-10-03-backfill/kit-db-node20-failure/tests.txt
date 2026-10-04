@@ -1,0 +1,102 @@
+
+> @binarylawyer/sushi-deck-kit@0.9.2 test
+> vitest run
+
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90m/Users/cmoye/Projects/backfill-finish-20261003-temp/kit[39m
+
+ [32m✓[39m src/editor/model.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+ [32m✓[39m src/json/ops.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+ [32m✓[39m src/store/SupabaseDeckStore.owner.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+ [32m✓[39m src/store/InMemoryDeckStore.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+ [32m✓[39m src/generate/generate.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+ [32m✓[39m src/api/handlers.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 29[2mms[22m[39m
+ [32m✓[39m src/json/render.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+ [31m❯[39m src/store/SupabaseDeckStore.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[90m 70[2mms[22m[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mcreates a deck with id, version 1, timestamps, and a slug from the title[90m 59[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mhonors an explicit slug[90m 2[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mrejects a duplicate slug with DeckConflictError[90m 2[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mrejects an invalid deck with DeckValidationError[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mgets a deck by id and by slug; returns null when missing[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mlists decks, most-recently-updated first[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mupdates a deck: bumps version, changes content + updatedAt[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mrejects update of a missing deck with DeckNotFoundError[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22menforces optimistic concurrency via expectedVersion[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mrejects updating to an already-taken slug[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[31m   [31m×[31m DeckStore contract: SupabaseDeckStore[2m > [22mremoves a deck; removing a missing one throws DeckNotFoundError[90m 1[2mms[22m[31m[39m
+[31m     → Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+ [32m✓[39m src/DeckRuntime.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[90m 9[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m63 passed[39m[22m[90m (74)[39m
+[2m   Start at [22m 21:42:16
+[2m   Duration [22m 302ms[2m (transform 258ms, setup 0ms, collect 504ms, tests 133ms, environment 1ms, prepare 446ms)[22m
+
+[90mstderr[2m | src/store/SupabaseDeckStore.test.ts[2m > [22m[2mDeckStore contract: SupabaseDeckStore[2m > [22m[2mcreates a deck with id, version 1, timestamps, and a slug from the title
+[22m[39m⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+
+[31m⎯⎯⎯⎯⎯⎯[1m[7m Failed Tests 11 [27m[22m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mcreates a deck with id, version 1, timestamps, and a slug from the title
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mhonors an explicit slug
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mrejects a duplicate slug with DeckConflictError
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mrejects an invalid deck with DeckValidationError
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mgets a deck by id and by slug; returns null when missing
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mlists decks, most-recently-updated first
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mupdates a deck: bumps version, changes content + updatedAt
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mrejects update of a missing deck with DeckNotFoundError
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22menforces optimistic concurrency via expectedVersion
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mrejects updating to an already-taken slug
+[31m[1m[7m FAIL [27m[22m[39m src/store/SupabaseDeckStore.test.ts[2m > [22mDeckStore contract: SupabaseDeckStore[2m > [22mremoves a deck; removing a missing one throws DeckNotFoundError
+[31m[1mError[22m: Node.js detected but native WebSocket not found.
+
+Suggested solution: Ensure you are running Node.js 22+ or provide a WebSocket implementation via the transport option.[39m
+[90m [2m❯[22m Function.getWebSocketConstructor node_modules/@supabase/realtime-js/src/lib/websocket-factory.ts:[2m159:11[22m[39m
+[90m [2m❯[22m RealtimeClient._initializeOptions node_modules/@supabase/realtime-js/src/RealtimeClient.ts:[2m789:63[22m[39m
+[90m [2m❯[22m new RealtimeClient node_modules/@supabase/realtime-js/src/RealtimeClient.ts:[2m283:39[22m[39m
+[90m [2m❯[22m SupabaseClient._initRealtimeClient node_modules/@supabase/supabase-js/src/SupabaseClient.ts:[2m630:12[22m[39m
+[90m [2m❯[22m new SupabaseClient node_modules/@supabase/supabase-js/src/SupabaseClient.ts:[2m367:26[22m[39m
+[90m [2m❯[22m createClient node_modules/@supabase/supabase-js/src/index.ts:[2m65:10[22m[39m
+[36m [2m❯[22m src/store/SupabaseDeckStore.test.ts:[2m22:20[22m[39m
+    [90m 20| [39m        [35mconst[39m { createClient } [33m=[39m [35mawait[39m [35mimport[39m([32m"@supabase/supabase-js"[39m)[33m;[39m
+    [90m 21| [39m        [35mconst[39m { [33mSupabaseDeckStore[39m } [33m=[39m [35mawait[39m [35mimport[39m([32m"./SupabaseDeckStor[39m…
+    [90m 22| [39m        [35mconst[39m db [33m=[39m [34mcreateClient[39m(url[33m,[39m key[33m,[39m { auth[33m:[39m { persistSession[33m:[39m [35mfa[39m…
+    [90m   | [39m                   [31m^[39m
+    [90m 23| [39m        [35mawait[39m db[33m.[39m[35mfrom[39m([32m"decks"[39m)[33m.[39m[35mdelete[39m()[33m.[39m[34mneq[39m([32m"id"[39m[33m,[39m [32m"00000000-0000-0000-[39m…
+    [90m 24| [39m        [35mreturn[39m [35mnew[39m [33mSupabaseDeckStore[39m(db)[33m;[39m
+[90m [2m❯[22m src/store/contract.ts:[2m37:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+

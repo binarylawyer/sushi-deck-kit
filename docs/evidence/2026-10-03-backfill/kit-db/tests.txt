@@ -1,0 +1,22 @@
+
+> @binarylawyer/sushi-deck-kit@0.9.2 test
+> vitest run
+
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90m/Users/cmoye/Projects/backfill-finish-20261003-temp/kit[39m
+
+ [32m✓[39m src/json/ops.test.ts [2m([22m[2m13 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+ [32m✓[39m src/editor/model.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+ [32m✓[39m src/store/SupabaseDeckStore.owner.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+ [32m✓[39m src/store/InMemoryDeckStore.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+ [32m✓[39m src/generate/generate.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+ [32m✓[39m src/api/handlers.test.ts [2m([22m[2m9 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+ [32m✓[39m src/json/render.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+ [32m✓[39m src/DeckRuntime.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+ [32m✓[39m src/store/SupabaseDeckStore.test.ts [2m([22m[2m11 tests[22m[2m)[22m[90m 196[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[32m74 passed[39m[22m[90m (74)[39m
+[2m   Start at [22m 21:42:38
+[2m   Duration [22m 463ms[2m (transform 235ms, setup 0ms, collect 482ms, tests 240ms, environment 1ms, prepare 480ms)[22m
+
