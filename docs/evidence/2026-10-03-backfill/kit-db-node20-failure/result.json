@@ -1,0 +1,1 @@
+{"exit": 1, "node": "20.19.0", "postgres": "16.15-alpine", "postgrest": "12.2.3", "platform": "darwin/arm64 node; linux/arm64 databases", "fixture": "local service-role transport, not production auth/RLS acceptance"}

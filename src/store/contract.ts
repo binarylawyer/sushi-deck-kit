@@ -25,6 +25,8 @@ export function sampleDeck(title = "Test Deck"): DeckJson {
     };
 }
 
+// Missing-id checks use a valid UUID so database adapters exercise absence,
+// rather than PostgreSQL rejecting a malformed identifier before lookup.
 export function deckStoreContract(
     label: string,
     makeStore: () => DeckStore | Promise<DeckStore>,
@@ -64,7 +66,7 @@ export function deckStoreContract(
             const rec = await store.create({ slug: "findme", deck: sampleDeck() });
             expect((await store.get(rec.id))?.id).toBe(rec.id);
             expect((await store.getBySlug("findme"))?.id).toBe(rec.id);
-            expect(await store.get("nope")).toBeNull();
+            expect(await store.get("00000000-0000-4000-8000-000000000001")).toBeNull();
             expect(await store.getBySlug("nope")).toBeNull();
         });
 
@@ -86,7 +88,7 @@ export function deckStoreContract(
         });
 
         it("rejects update of a missing deck with DeckNotFoundError", async () => {
-            await expect(store.update("nope", { deck: sampleDeck() })).rejects.toBeInstanceOf(DeckNotFoundError);
+            await expect(store.update("00000000-0000-4000-8000-000000000001", { deck: sampleDeck() })).rejects.toBeInstanceOf(DeckNotFoundError);
         });
 
         it("enforces optimistic concurrency via expectedVersion", async () => {

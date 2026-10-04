@@ -242,6 +242,13 @@ thin shell — reuse the reducer to build a custom editor if you prefer.
 
 ## Testing (TDD)
 
+Use Node 22 for development and verification. The locked Supabase client uses
+native WebSocket support when the optional database contract suite is enabled.
+The database suite needs `SUSHI_TEST_SUPABASE_URL` and `SUSHI_TEST_SUPABASE_KEY`;
+without them it is explicitly skipped. See
+[`docs/evidence/2026-10-03-backfill/README.md`](docs/evidence/2026-10-03-backfill/README.md)
+for the disposable database verification and historical Node 20 limitation.
+
 Developed test-first with **Vitest**. Tests live next to the code
 (`*.test.ts` / `*.test.tsx`) and run in Node (rendering assertions use
 `react-dom/server`, so no jsdom).
