@@ -1,0 +1,46 @@
+
+> @binarylawyer/sushi-deck-kit@0.9.2 test
+> vitest run src/store/SupabaseDeckStore.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v2.1.9 /work
+
+ ❯ src/store/SupabaseDeckStore.test.ts (11 tests | 2 failed) 196ms
+   × DeckStore contract: SupabaseDeckStore > gets a deck by id and by slug; returns null when missing 13ms
+     → decks.get failed: invalid input syntax for type uuid: "nope" [22P02]
+   × DeckStore contract: SupabaseDeckStore > rejects update of a missing deck with DeckNotFoundError 3ms
+     → expected Error: decks.get failed: invalid input sy… { code: '…' } to be an instance of DeckNotFoundError
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 9 passed (11)
+   Start at  01:51:52
+   Duration  354ms (transform 61ms, setup 0ms, collect 27ms, tests 196ms, environment 0ms, prepare 56ms)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > gets a deck by id and by slug; returns null when missing
+Error: decks.get failed: invalid input syntax for type uuid: "nope" [22P02]
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.get src/store/SupabaseDeckStore.ts:121:26
+ ❯ src/store/contract.ts:67:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > rejects update of a missing deck with DeckNotFoundError
+AssertionError: expected Error: decks.get failed: invalid input sy… { code: '…' } to be an instance of DeckNotFoundError
+ ❯ src/store/contract.ts:89:13
+     87| 
+     88|         it("rejects update of a missing deck with DeckNotFoundError", …
+     89|             await expect(store.update("nope", { deck: sampleDeck() }))…
+       |             ^
+     90|         });
+     91| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

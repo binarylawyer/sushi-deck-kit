@@ -1,0 +1,14 @@
+
+> @binarylawyer/sushi-deck-kit@0.9.2 test
+> vitest run src/store/SupabaseDeckStore.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v2.1.9 /work
+
+ ✓ src/store/SupabaseDeckStore.test.ts (11 tests) 216ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  01:53:49
+   Duration  404ms (transform 85ms, setup 0ms, collect 55ms, tests 216ms, environment 0ms, prepare 58ms)
+
