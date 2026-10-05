@@ -1,0 +1,174 @@
+
+> @binarylawyer/sushi-deck-kit@0.9.2 test
+> vitest run src/store/SupabaseDeckStore.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v2.1.9 /work
+
+ ❯ src/store/SupabaseDeckStore.test.ts (11 tests | 10 failed) 159ms
+   × DeckStore contract: SupabaseDeckStore > creates a deck with id, version 1, timestamps, and a slug from the title 96ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > honors an explicit slug 3ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > rejects a duplicate slug with DeckConflictError 3ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > gets a deck by id and by slug; returns null when missing 3ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > lists decks, most-recently-updated first 2ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > updates a deck: bumps version, changes content + updatedAt 1ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > rejects update of a missing deck with DeckNotFoundError 3ms
+     → expected Error: decks.get failed: unknown Supabase… { code: undefined } to be an instance of DeckNotFoundError
+   × DeckStore contract: SupabaseDeckStore > enforces optimistic concurrency via expectedVersion 2ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > rejects updating to an already-taken slug 42ms
+     → decks.create failed: unknown Supabase error
+   × DeckStore contract: SupabaseDeckStore > removes a deck; removing a missing one throws DeckNotFoundError 2ms
+     → decks.create failed: unknown Supabase error
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 1 passed (11)
+   Start at  01:49:01
+   Duration  356ms (transform 67ms, setup 0ms, collect 31ms, tests 159ms, environment 0ms, prepare 78ms)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > creates a deck with id, version 1, timestamps, and a slug from the title
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:39:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > honors an explicit slug
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:49:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > rejects a duplicate slug with DeckConflictError
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:54:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > gets a deck by id and by slug; returns null when missing
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:64:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > lists decks, most-recently-updated first
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:72:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > updates a deck: bumps version, changes content + updatedAt
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:81:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > rejects update of a missing deck with DeckNotFoundError
+AssertionError: expected Error: decks.get failed: unknown Supabase… { code: undefined } to be an instance of DeckNotFoundError
+ ❯ src/store/contract.ts:89:13
+     87| 
+     88|         it("rejects update of a missing deck with DeckNotFoundError", …
+     89|             await expect(store.update("nope", { deck: sampleDeck() }))…
+       |             ^
+     90|         });
+     91| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > enforces optimistic concurrency via expectedVersion
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:93:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > rejects updating to an already-taken slug
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:100:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  src/store/SupabaseDeckStore.test.ts > DeckStore contract: SupabaseDeckStore > removes a deck; removing a missing one throws DeckNotFoundError
+Error: decks.create failed: unknown Supabase error
+ ❯ dbError src/store/SupabaseDeckStore.ts:62:21
+     60|     if (e?.details) parts.push(`— ${e.details}`);
+     61|     if (e?.hint) parts.push(`(hint: ${e.hint})`);
+     62|     const wrapped = new Error(`decks.${op} failed: ${parts.join(" ")}`…
+       |                     ^
+     63|     (wrapped as Error & { code?: string; cause?: unknown }).code = e?.…
+     64|     (wrapped as Error & { cause?: unknown }).cause = error;
+ ❯ SupabaseDeckStore.create src/store/SupabaseDeckStore.ts:114:19
+ ❯ src/store/contract.ts:106:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+

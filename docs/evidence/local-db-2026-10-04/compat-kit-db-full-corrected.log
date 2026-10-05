@@ -1,0 +1,26 @@
+
+> @binarylawyer/sushi-deck-kit@0.9.2 typecheck
+> tsc --noEmit
+
+
+> @binarylawyer/sushi-deck-kit@0.9.2 test
+> vitest run --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v2.1.9 /work
+
+ ✓ src/api/handlers.test.ts (9 tests) 9ms
+ ✓ src/store/SupabaseDeckStore.owner.test.ts (7 tests) 3ms
+ ✓ src/json/ops.test.ts (13 tests) 3ms
+ ✓ src/editor/model.test.ts (8 tests) 3ms
+ ✓ src/generate/generate.test.ts (6 tests) 3ms
+ ✓ src/DeckRuntime.test.tsx (5 tests) 10ms
+ ✓ src/json/render.test.tsx (4 tests) 6ms
+ ✓ src/store/SupabaseDeckStore.test.ts (11 tests) 125ms
+ ✓ src/store/InMemoryDeckStore.test.ts (11 tests) 5ms
+
+ Test Files  9 passed (9)
+      Tests  74 passed (74)
+   Start at  02:00:22
+   Duration  1.66s (transform 138ms, setup 0ms, collect 278ms, tests 166ms, environment 1ms, prepare 539ms)
+

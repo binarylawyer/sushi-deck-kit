@@ -1,0 +1,15 @@
+{
+  "scope": "disposable compatibility kit storage contract; not production RLS/cutover",
+  "source": "9d1ab72f07cefd3a6f67cdab07a790f7049920a2",
+  "network_internal": true,
+  "host_ports": false,
+  "database_tmpfs": true,
+  "test_exit_code": 0,
+  "cleanup": {
+    "sushii-backlog-kit-test-20261004": 0,
+    "sushii-backlog-kit-rest-20261004": 0,
+    "sushii-backlog-kit-pg-20261004": 0,
+    "network_remove": 0
+  },
+  "synthetic_credentials_removed": true
+}
